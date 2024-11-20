@@ -1,0 +1,27 @@
+import random
+from collections import defaultdict
+def generate_ngrams(text, n):
+    tokens = text.split()
+    ngrams = list(zip(*[tokens[i:] for i in range(n)]))
+    return ngrams
+def build_ngram_model(text, n):
+    ngrams = generate_ngrams(text, n)
+    model = defaultdict(list)
+    for ngram in ngrams:
+        prefix, next_word = tuple(ngram[:-1]), ngram[-1]
+        model[prefix].append(next_word)
+    return model
+def generate_text(model, start, length):
+    output = list(start)
+    current = tuple(start)
+    for _ in range(length):
+        next_word = random.choice(model.get(current, [""]))
+        if not next_word:
+            break
+        output.append(next_word)
+        current = tuple(output[-len(current):])
+    return ' '.join(output)
+text = "the quick brown fox jumps over the lazy dog"
+bigram_model = build_ngram_model(text, 2)
+generated_text = generate_text(bigram_model, ["the"], 10)
+print("Generated text:", generated_text)
